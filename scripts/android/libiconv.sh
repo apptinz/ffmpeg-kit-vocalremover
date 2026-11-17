@@ -2,7 +2,13 @@
 
 # INIT SUBMODULES
 ${SED_INLINE} 's|git://git.savannah.gnu.org|https://github.com/arthenica|g' "${BASEDIR}"/src/"${LIB_NAME}"/.gitmodules || return 1
-./gitsub.sh pull || return 1
+# Vocal Remover build: pin gnulib to the revision matching libiconv 1.17 (2022-05-15).
+# gitsub.sh pulls gnulib master, whose m4 macros no longer match libiconv 1.17's configure.ac,
+# and cannot pull once gnulib is on a pinned (detached) revision, so only clone it the first time.
+if [[ ! -d gnulib/.git ]]; then
+  ./gitsub.sh pull || return 1
+fi
+git -C gnulib checkout -q 4bc2b6f67259e3fb54d21d3b93e7cab12161f7fd || return 1
 
 # ALWAYS CLEAN THE PREVIOUS BUILD
 make distclean 2>/dev/null 1>/dev/null

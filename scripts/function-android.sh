@@ -228,7 +228,8 @@ get_common_cflags() {
   fi
 
   if [[ $(compare_versions "$DETECTED_NDK_VERSION" "23") -ge 0 ]]; then
-    echo "-fstrict-aliasing -DANDROID_NDK -fPIC -DANDROID ${LTS_BUILD_FLAG}-D__ANDROID__ -D__ANDROID_MIN_SDK_VERSION__=${API}"
+    # Vocal Remover build: clang in NDK r26+ turns these old-C warnings into errors (e.g. libuuid's flock).
+    echo "-fstrict-aliasing -DANDROID_NDK -fPIC -DANDROID ${LTS_BUILD_FLAG}-D__ANDROID__ -D__ANDROID_MIN_SDK_VERSION__=${API} -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-function-pointer-types"
   else
     echo "-fno-integrated-as -fstrict-aliasing -DANDROID_NDK -fPIC -DANDROID ${LTS_BUILD_FLAG}-D__ANDROID__ -D__ANDROID_API__=${API}"
   fi
